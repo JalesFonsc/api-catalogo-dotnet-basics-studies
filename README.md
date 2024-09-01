@@ -5,7 +5,7 @@
 <img src="https://img.shields.io/static/v1?label=Tipo&message=Estudo&color=00ff08&labelColor=000000" alt="Estudo" />
 </p>
 
-Pequeno projeto onde estudo um pouco dos conceitos elementares e fundamentais da construções de Web Api's usando arquitetura REST com .NET, além do ORM EntityFramework.
+Pequeno projeto onde estudo um pouco dos conceitos elementares e fundamentais das construções de Web Api's usando arquitetura REST com .NET, além do ORM EntityFramework.
 
 ## Tecnologias
  
