@@ -11,6 +11,7 @@ Pequeno projeto onde estudo um pouco dos conceitos elementares e fundamentais da
  
 - [.NET](https://dotnet.microsoft.com/pt-br/)
 - [Entity Framework](https://learn.microsoft.com/pt-br/ef/)
+- [MySQL](https://www.mysql.com/)
 
 ## Práticas adotadas
 
@@ -22,7 +23,9 @@ Pequeno projeto onde estudo um pouco dos conceitos elementares e fundamentais da
 ## Como Executar
 
 - Clonar repositório git;
-- Construir o projeto e executar a aplicação;
+- Configurar o banco de dados que você está utilizando no arquivo appsettings.json (recomendo utilizar o MySQL, pois a configuração do AppDbContext nos services do builder da classe Programs foi realizada em cima do contexto do MySQL);
+- Aplicar os migrations;
+- Utilizar o Swagger ou algum outro recurso que ajude-o a fazer as consultas das rotas;
 
 ## API Endpoints
 
