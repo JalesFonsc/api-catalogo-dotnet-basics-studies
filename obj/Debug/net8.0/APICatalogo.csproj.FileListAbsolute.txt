@@ -230,3 +230,4 @@ C:\Users\Jales\Desktop\C# 2\APICatalogo\APICatalogo\bin\Debug\net8.0\runtimes\wi
 C:\Users\Jales\Desktop\C# 2\APICatalogo\APICatalogo\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 C:\Users\Jales\Desktop\C# 2\APICatalogo\APICatalogo\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Jales\Desktop\C# 2\APICatalogo\APICatalogo\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
+C:\Users\Jales\Desktop\C# 2\APICatalogo\APICatalogo\obj\Debug\net8.0\APICatalogo.sourcelink.json

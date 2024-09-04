@@ -10,15 +10,15 @@ public class Produto
     [Key]
     public int ProdutoId { get; set; }
 
-    [Required]
+    [Required(ErrorMessage ="O nome do produto é obrigatório.")]
     [StringLength(80)]
     public string? Nome { get; set; }
 
-    [Required]
+    [Required(ErrorMessage ="A descrição do produto é obrigatória.")]
     [StringLength(300)]
     public string? Descricao { get; set; }
 
-    [Required]
+    [Required(ErrorMessage ="O preço do produto é obrigatório.")]
     [Column(TypeName="decimal(10,2)")]
     public decimal Preco {  get; set; }
 

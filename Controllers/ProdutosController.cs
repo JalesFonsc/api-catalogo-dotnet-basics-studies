@@ -18,11 +18,11 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> GetAsync()
         {
             try
             {
-                var produtos = _context.Produtos.AsNoTracking().ToList();
+                var produtos = await _context.Produtos.AsNoTracking().ToListAsync();
 
                 if (produtos is null)
                 {
@@ -40,11 +40,11 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("{id:int}", Name ="ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public async Task<ActionResult<Produto>> GetAsync(int id)
         {
             try
             {
-                var produto = _context.Produtos.AsNoTracking().FirstOrDefault(i => i.ProdutoId == id);
+                var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(i => i.ProdutoId == id);
 
                 if (produto is null)
                 {
