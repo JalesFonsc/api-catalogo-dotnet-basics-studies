@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using APICatalogo.Validations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -24,7 +25,9 @@ public class Produto
 
     [Required]
     [StringLength(300)]
-    public string? ImagemUrl { get; set; }   
+    public string? ImagemUrl { get; set; }
+
+    [NotNegativeAndZero]
     public float Estoque { get; set; }
     public DateTime DataCadastro { get; set; }
     public int CategoriaId { get; set; }
