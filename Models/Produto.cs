@@ -19,8 +19,8 @@ public class Produto
     [StringLength(300)]
     public string? Descricao { get; set; }
 
-    [Required(ErrorMessage ="O preço do produto é obrigatório.")]
     [Column(TypeName="decimal(10,2)")]
+    [NotNegativeAndZero]
     public decimal Preco {  get; set; }
 
     [Required]
