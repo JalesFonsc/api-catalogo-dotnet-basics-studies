@@ -1,8 +1,7 @@
-﻿using APICatalogo.Context;
+﻿using APICatalogo.Dto.Produto;
 using APICatalogo.Models;
-using Microsoft.AspNetCore.Http;
+using APICatalogo.Services.Produto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
 {
@@ -10,83 +9,96 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IProdutoRepository _produtoRepository;
 
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(IProdutoRepository produtoRepository)
         {
-            _context = context;
+            _produtoRepository = produtoRepository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetAsync()
+        [HttpGet("ListarProdutos")]
+        public async Task<ActionResult<IEnumerable<ProdutoModel>>> ListarProdutos()
         {
-            var produtos = await _context.Produtos.AsNoTracking().ToListAsync();
+            var produtos = await _produtoRepository.ListarProdutos();
 
-            if (produtos is null)
+            if (produtos == null)
             {
-                return NotFound("Produtos não encontrados");
+                return BadRequest("Produtos não encontrados!");
             }
 
-            return produtos;
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            return Ok(produtos);
         }
 
-        [HttpGet("{id:int}", Name = "ObterProduto")]
-        public async Task<ActionResult<Produto>> GetAsync(int id)
+        [HttpGet("BuscarProdutoPorId/{idProduto:int}", Name = "ObterProduto")]
+        public async Task<ActionResult<ProdutoModel>> BuscarProdutoPorId(int idProduto)
         {
-            var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(i => i.ProdutoId == id);
+            var produto = await _produtoRepository.BuscarProdutoPorId(idProduto);
 
-            if (produto is null)
+            if (produto == null)
             {
-                return NotFound($"Produto com id={id} não encontrado");
+                return BadRequest($"Produto com id = {idProduto} não encontrado");
             }
-
-            return produto;
-
-        }
-
-        [HttpPost]
-        public ActionResult Post(Produto produto)
-        {
-            if (produto is null)
-            {
-                return BadRequest("Dados inválidos.");
-            }
-
-            _context.Produtos.Add(produto);
-            _context.SaveChanges();
-
-            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
-        }
-
-        [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
-        {
-            if (id != produto.ProdutoId)
-            {
-                return BadRequest("Dados inválidos.");
-            }
-
-            _context.Entry(produto).State = EntityState.Modified;
-            _context.SaveChanges();
 
             return Ok(produto);
-
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult<Produto> Delete(int id)
+        [HttpPost("CriaProduto")]
+        public async Task<ActionResult<IEnumerable<ProdutoModel>>> CriaProduto(ProdutoCriacaoDto produtoCriacaoDto)
         {
-            var produto = _context.Produtos.FirstOrDefault(i => i.ProdutoId == id);
+            var produtos =  await _produtoRepository.CriaProduto(produtoCriacaoDto);
 
-            if (produto is null)
+            if (produtos == null)
             {
-                return BadRequest($"Produto com id={id} não encontrado");
+                return BadRequest("Produtos não encontrados!");
             }
 
-            _context.Produtos.Remove(produto);
-            _context.SaveChanges();
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
 
-            return Ok(produto);
+            return Ok(produtos);
+        }
+
+        [HttpPut("EditarProduto/{idProduto:int}")]
+        public async Task<ActionResult<IEnumerable<ProdutoModel>>> EditarProduto(int idProduto, ProdutoCriacaoDto produtoCriacaoDto)
+        {
+            var produtos = await _produtoRepository.EditarProduto(idProduto, produtoCriacaoDto);
+
+            if (produtos == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            return Ok(produtos);
+        }
+
+        [HttpDelete("RemoverProduto/{idProduto:int}")]
+        public async Task<ActionResult<IEnumerable<ProdutoModel>>> RemoverProduto(int idProduto)
+        {
+            var produtos = await _produtoRepository.RemoverProduto(idProduto);
+
+            if (produtos == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            return Ok(produtos);
         }
     }
 }

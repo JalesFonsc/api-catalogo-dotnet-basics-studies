@@ -1,9 +1,8 @@
-﻿using APICatalogo.Context;
+﻿using APICatalogo.Dto.Categoria;
 using APICatalogo.Filters;
 using APICatalogo.Models;
-using Microsoft.AspNetCore.Http;
+using APICatalogo.Services.Categoria;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
 {
@@ -11,90 +10,115 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoriasController(AppDbContext context)
+        public CategoriasController(ICategoryRepository categoryRepository)
         {
-            _context = context;
+            this._categoryRepository = categoryRepository;
         }
 
-        [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        [HttpGet("ListarCategoriasComProdutos")]
+        public async Task<ActionResult<IEnumerable<CategoriaModel>>> ListarCategoriasComProdutos()
         {
-            return _context.Categorias.Include(p => p.Produtos).AsNoTracking().ToList();
+            var categoriasComProdutos = await _categoryRepository.ListarCategoriasComProdutos();
+
+            if(categoriasComProdutos == null)
+            {
+                return BadRequest("Dados não encontrados!");
+            }
+
+            if (categoriasComProdutos.ToList().Count == 0)
+            {
+                return BadRequest("Não há nenhuma categoria cadastrada!");
+            }
+
+            return Ok(categoriasComProdutos);
         }
 
-        [HttpGet]
+        [HttpGet("ListarCategorias")]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public async Task<ActionResult<IEnumerable<CategoriaModel>>> ListarCategorias()
         {
-            var categorias = _context.Categorias.AsNoTracking().ToList();
+            var categorias = await _categoryRepository.ListarCategorias();
 
-            if (categorias is null)
+            if(categorias == null)
             {
-                return NotFound("Categorias não encontradas");
+                return BadRequest("Dados não encontrados!");
             }
 
-            return categorias;
+            if (categorias.ToList().Count == 0)
+            {
+                return BadRequest("Não há nenhuma categoria cadastrada!");
+            }
+
+            return Ok(categorias);
 
         }
 
-        [HttpGet("{id:int}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> Get(int id)
+        [HttpGet("BuscarCategoriaPorId/{idCategoria:int}")]
+        public async Task<ActionResult<CategoriaModel>> BuscarCategoriaPorId(int idCategoria)
         {
-            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(i => i.CategoriaId == id);
+            var categoria = await _categoryRepository.BuscarCategoriaPorId(idCategoria);
 
-            if (categoria is null)
-            {
-                return NotFound($"Categoria com id={id} não encontrada");
+            if (categoria == null) { 
+                return BadRequest("Dados não encontrados!");
             }
 
             return Ok(categoria);
 
         }
 
-        [HttpPost]
-        public ActionResult Post(Categoria categoria)
+        [HttpPost("CriaCategoria")]
+        public async Task<ActionResult<IEnumerable<CategoriaModel>>> CriaCategoria(CategoriaCriacaoDto categoriaCriacaoDto)
         {
-            if (categoria is null)
-            {
-                return BadRequest("Dados inválidos.");
+            var categorias = await _categoryRepository.CriaCategoria(categoriaCriacaoDto);
+
+            if (categorias == null) { 
+                return BadRequest("Dados não encontrados!");
             }
 
-            _context.Categorias.Add(categoria);
-            _context.SaveChanges();
+            if (categorias.ToList().Count == 0)
+            {
+                return BadRequest("Não há nenhuma categoria cadastrada!");
+            }
 
-            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
+            return Ok(categorias);
         }
 
-        [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Categoria categoria)
+        [HttpPut("EditarCategoria/{idCategoria:int}")]
+        public async Task<ActionResult<IEnumerable<CategoriaModel>>> EditarCategoria(int idCategoria, CategoriaCriacaoDto categoriaCriacaoDto)
         {
-            if (id != categoria.CategoriaId)
+            var categorias = await _categoryRepository.EditarCategoria(idCategoria, categoriaCriacaoDto);
+
+            if (categorias == null)
             {
-                return BadRequest("Dados inválidos.");
+                return BadRequest("Dados não encontrados!");
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
-            _context.SaveChanges();
+            if (categorias.ToList().Count == 0)
+            {
+                return BadRequest("Não há nenhuma categoria cadastrada!");
+            }
 
-            return Ok(categoria);
+            return Ok(categorias);
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult<Categoria> Delete(int id)
+        [HttpDelete("RemoverCategoria/{idCategoria:int}")]
+        public async Task<ActionResult<IEnumerable<CategoriaModel>>> RemoverCategoria(int idCategoria)
         {
-            var categoria = _context.Categorias.FirstOrDefault(i => i.CategoriaId == id);
+            var categorias = await _categoryRepository.RemoverCategoria(idCategoria);
 
-            if (categoria is null)
+            if (categorias == null)
             {
-                return BadRequest($"Categoria com id={id} não encontrada");
+                return BadRequest("Dados não encontrados!");
             }
 
-            _context.Categorias.Remove(categoria);
-            _context.SaveChanges();
+            if (categorias.ToList().Count == 0)
+            {
+                return BadRequest("Não há nenhuma categoria cadastrada!");
+            }
 
-            return Ok(categoria);
+            return Ok(categorias);
         }
     }
 }

@@ -6846,11 +6846,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jales\\Desktop\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
+      "projectUniqueName": "C:\\Users\\Jales\\Desktop\\Projetos C#\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
       "projectName": "APICatalogo",
-      "projectPath": "C:\\Users\\Jales\\Desktop\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
+      "projectPath": "C:\\Users\\Jales\\Desktop\\Projetos C#\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
       "packagesPath": "C:\\Users\\Jales\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jales\\Desktop\\C# 2\\APICatalogo\\APICatalogo\\obj\\",
+      "outputPath": "C:\\Users\\Jales\\Desktop\\Projetos C#\\C# 2\\APICatalogo\\APICatalogo\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Jales\\AppData\\Roaming\\NuGet\\NuGet.Config",

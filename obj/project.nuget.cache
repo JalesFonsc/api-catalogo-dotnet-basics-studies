@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "KhI8gM/JuMg=",
+  "dgSpecHash": "ut1lyf7skck=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Jales\\Desktop\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
+  "projectFilePath": "C:\\Users\\Jales\\Desktop\\Projetos C#\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Jales\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Jales\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
