@@ -1,7 +1,8 @@
 ﻿using APICatalogo.Dto.Categoria;
+using APICatalogo.Dto.Produto;
 using APICatalogo.Filters;
 using APICatalogo.Models;
-using APICatalogo.Services.Categoria;
+using APICatalogo.Repositories.Category;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APICatalogo.Controllers
@@ -11,10 +12,12 @@ namespace APICatalogo.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ILogger<CategoriasController> _logger;
 
-        public CategoriasController(ICategoryRepository categoryRepository)
+        public CategoriasController(ICategoryRepository categoryRepository, ILogger<CategoriasController> logger)
         {
             this._categoryRepository = categoryRepository;
+            _logger = logger;
         }
 
         [HttpGet("ListarCategoriasComProdutos")]
@@ -39,7 +42,7 @@ namespace APICatalogo.Controllers
         [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> ListarCategorias()
         {
-            var categorias = await _categoryRepository.ListarCategorias();
+            var categorias = await _categoryRepository.Listar();
 
             if(categorias == null)
             {
@@ -58,10 +61,10 @@ namespace APICatalogo.Controllers
         [HttpGet("BuscarCategoriaPorId/{idCategoria:int}")]
         public async Task<ActionResult<CategoriaModel>> BuscarCategoriaPorId(int idCategoria)
         {
-            var categoria = await _categoryRepository.BuscarCategoriaPorId(idCategoria);
+            var categoria = await _categoryRepository.BuscarPorId(categoria => categoria.CategoriaId == idCategoria);
 
             if (categoria == null) { 
-                return BadRequest("Dados não encontrados!");
+                return BadRequest("Categoria não encontrada!");
             }
 
             return Ok(categoria);
@@ -71,54 +74,67 @@ namespace APICatalogo.Controllers
         [HttpPost("CriaCategoria")]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> CriaCategoria(CategoriaCriacaoDto categoriaCriacaoDto)
         {
-            var categorias = await _categoryRepository.CriaCategoria(categoriaCriacaoDto);
-
-            if (categorias == null) { 
-                return BadRequest("Dados não encontrados!");
-            }
-
-            if (categorias.ToList().Count == 0)
+            if (categoriaCriacaoDto == null)
             {
-                return BadRequest("Não há nenhuma categoria cadastrada!");
+                return BadRequest("Os dados necessários não foram passados!");
             }
 
-            return Ok(categorias);
+            var categoriaASerCriada = new CategoriaModel()
+            {
+                Nome = categoriaCriacaoDto.Nome,
+                ImagemUrl = categoriaCriacaoDto.ImagemUrl
+            };
+
+            var categoria = await _categoryRepository.Criar(categoriaASerCriada);
+
+            if (categoria == null) { 
+                return BadRequest("Categoria não encontrada!");
+            }
+
+            return Ok(categoria);
         }
 
         [HttpPut("EditarCategoria/{idCategoria:int}")]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> EditarCategoria(int idCategoria, CategoriaCriacaoDto categoriaCriacaoDto)
         {
-            var categorias = await _categoryRepository.EditarCategoria(idCategoria, categoriaCriacaoDto);
-
-            if (categorias == null)
+            if (categoriaCriacaoDto == null)
             {
-                return BadRequest("Dados não encontrados!");
+                return BadRequest("Os dados necessários não foram passados!");
             }
 
-            if (categorias.ToList().Count == 0)
+            var categoriaASerEditada = new CategoriaModel()
             {
-                return BadRequest("Não há nenhuma categoria cadastrada!");
+                CategoriaId = idCategoria,
+                Nome = categoriaCriacaoDto.Nome,
+                ImagemUrl = categoriaCriacaoDto.ImagemUrl
+            };
+
+            var categoria = await _categoryRepository.Editar(categoriaASerEditada);
+
+            if (categoria == null)
+            {
+                return BadRequest("Categoria não encontrada!");
             }
 
-            return Ok(categorias);
+            return Ok(categoria);
         }
 
         [HttpDelete("RemoverCategoria/{idCategoria:int}")]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> RemoverCategoria(int idCategoria)
         {
-            var categorias = await _categoryRepository.RemoverCategoria(idCategoria);
-
-            if (categorias == null)
+            var categoriaASerDeletada = new CategoriaModel()
             {
-                return BadRequest("Dados não encontrados!");
+                CategoriaId = idCategoria
+            };
+
+            var categoria = await _categoryRepository.Deletar(categoriaASerDeletada);
+
+            if (categoria == null)
+            {
+                return BadRequest("Categoria não encontrada!");
             }
 
-            if (categorias.ToList().Count == 0)
-            {
-                return BadRequest("Não há nenhuma categoria cadastrada!");
-            }
-
-            return Ok(categorias);
+            return Ok(categoria);
         }
     }
 }
