@@ -1,5 +1,4 @@
 ﻿using APICatalogo.Dto.Categoria;
-using APICatalogo.Dto.Produto;
 using APICatalogo.Filters;
 using APICatalogo.Models;
 using APICatalogo.Repositories.Category;

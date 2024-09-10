@@ -1,7 +1,14 @@
-﻿namespace APICatalogo.Dto.Categoria;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace APICatalogo.Dto.Categoria;
 
 public class CategoriaCriacaoDto
 {
-    public string Nome { get; set; }
-    public string ImagemUrl { get; set; }
+    [Required]
+    [StringLength(80)]
+    public string? Nome { get; set; }
+
+    [Required]
+    [StringLength(300)]
+    public string? ImagemUrl { get; set; }
 }

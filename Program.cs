@@ -2,6 +2,7 @@ using APICatalogo.Context;
 using APICatalogo.Extensions;
 using APICatalogo.Filters;
 using APICatalogo.Logging;
+using APICatalogo.Repositories;
 using APICatalogo.Repositories.Category;
 using APICatalogo.Repositories.Produto;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
