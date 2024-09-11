@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Dto.Categoria;
+using APICatalogo.Dto.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Models;
 using APICatalogo.Repositories;
@@ -78,11 +79,12 @@ namespace APICatalogo.Controllers
                 return BadRequest("Os dados necessários não foram passados!");
             }
 
-            var categoriaASerCriada = new CategoriaModel()
+            var categoriaASerCriada = categoriaCriacaoDto.ToCategoria(null);
+
+            if (categoriaASerCriada == null)
             {
-                Nome = categoriaCriacaoDto.Nome,
-                ImagemUrl = categoriaCriacaoDto.ImagemUrl
-            };
+                return BadRequest("Houve um erro na conversão dos dados.");
+            }
 
             var categoria = await _unitOfWork.CategoryRepository.Criar(categoriaASerCriada);
             await _unitOfWork.Commit();
@@ -102,12 +104,12 @@ namespace APICatalogo.Controllers
                 return BadRequest("Os dados necessários não foram passados!");
             }
 
-            var categoriaASerEditada = new CategoriaModel()
+            var categoriaASerEditada = categoriaCriacaoDto.ToCategoria(idCategoria);
+
+            if (categoriaASerEditada == null)
             {
-                CategoriaId = idCategoria,
-                Nome = categoriaCriacaoDto.Nome,
-                ImagemUrl = categoriaCriacaoDto.ImagemUrl
-            };
+                return BadRequest("Houve um erro na conversão dos dados.");
+            }
 
             var categoria = await _unitOfWork.CategoryRepository.Editar(categoriaASerEditada);
             await _unitOfWork.Commit();

@@ -1,4 +1,5 @@
-﻿using APICatalogo.Dto.Produto;
+﻿using APICatalogo.Dto.Mappings;
+using APICatalogo.Dto.Produto;
 using APICatalogo.Models;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Produto;
@@ -76,16 +77,12 @@ namespace APICatalogo.Controllers
                 return BadRequest("Os dados necessários não foram passados!");
             }
 
-            var produtoASerCriado = new ProdutoModel()
+            var produtoASerCriado = produtoCriacaoDto.ToProduto(null);
+
+            if (produtoASerCriado == null)
             {
-                Nome = produtoCriacaoDto.Nome,
-                Descricao = produtoCriacaoDto.Descricao,
-                Estoque = produtoCriacaoDto.Estoque,
-                DataCadastro = produtoCriacaoDto.DataCadastro,
-                CategoriaId = produtoCriacaoDto.CategoriaId,
-                ImagemUrl = produtoCriacaoDto.ImagemUrl,
-                Preco = produtoCriacaoDto.Preco
-            };
+                return BadRequest("Houve um erro na conversão dos dados.");
+            }
 
             var produto = await _unitOfWork.ProdutoRepository.Criar(produtoASerCriado);
             await _unitOfWork.Commit();
@@ -106,17 +103,12 @@ namespace APICatalogo.Controllers
                 return BadRequest("Os dados necessários não foram passados!");
             }
 
-            var produtoASerEditado = new ProdutoModel()
+            var produtoASerEditado = produtoCriacaoDto.ToProduto(idProduto);
+
+            if (produtoASerEditado == null)
             {
-                ProdutoId = idProduto,
-                Nome = produtoCriacaoDto.Nome,
-                Descricao = produtoCriacaoDto.Descricao,
-                Estoque = produtoCriacaoDto.Estoque,
-                DataCadastro = produtoCriacaoDto.DataCadastro,
-                CategoriaId = produtoCriacaoDto.CategoriaId,
-                ImagemUrl = produtoCriacaoDto.ImagemUrl,
-                Preco = produtoCriacaoDto.Preco
-            };
+                return BadRequest("Houve um erro na conversão dos dados.");
+            }
 
             var produto = await _unitOfWork.ProdutoRepository.Editar(produtoASerEditado);
             await _unitOfWork.Commit();
