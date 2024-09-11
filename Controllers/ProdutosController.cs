@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Dto.Produto;
 using APICatalogo.Models;
+using APICatalogo.Repositories;
 using APICatalogo.Repositories.Produto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,17 +10,37 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly IProdutoRepository _produtoRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<CategoriasController> _logger;
 
-        public ProdutosController(IProdutoRepository produtoRepository)
+        public ProdutosController(IUnitOfWork unitOfWork, ILogger<CategoriasController> logger)
         {
-            _produtoRepository = produtoRepository;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         [HttpGet("ListarProdutos")]
         public async Task<ActionResult<IEnumerable<ProdutoModel>>> ListarProdutos()
         {
-            var produtos = await _produtoRepository.Listar();
+            var produtos = await _unitOfWork.ProdutoRepository.Listar();
+
+            if (produtos == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            return Ok(produtos);
+        }
+
+        [HttpGet("ListarProdutosPorIdCategoria/{idCategoria:int}")]
+        public async Task<ActionResult<IEnumerable<ProdutoModel>>> ListarProdutosPorIdCategoria(int idCategoria)
+        {
+            var produtos = await _unitOfWork.ProdutoRepository.ListarProdutosPorIdCategoria(idCategoria);
 
             if (produtos == null)
             {
@@ -37,7 +58,7 @@ namespace APICatalogo.Controllers
         [HttpGet("BuscarProdutoPorId/{idProduto:int}")]
         public async Task<ActionResult<ProdutoModel>> BuscarProdutoPorId(int idProduto)
         {
-            var produto = await _produtoRepository.BuscarPorId(i => i.ProdutoId == idProduto);
+            var produto = await _unitOfWork.ProdutoRepository.BuscarPorId(i => i.ProdutoId == idProduto);
 
             if (produto == null)
             {
@@ -66,7 +87,8 @@ namespace APICatalogo.Controllers
                 Preco = produtoCriacaoDto.Preco
             };
 
-            var produto =  await _produtoRepository.Criar(produtoASerCriado);
+            var produto = await _unitOfWork.ProdutoRepository.Criar(produtoASerCriado);
+            await _unitOfWork.Commit();
 
             if (produto == null)
             {
@@ -96,7 +118,8 @@ namespace APICatalogo.Controllers
                 Preco = produtoCriacaoDto.Preco
             };
 
-            var produto = await _produtoRepository.Editar(produtoASerEditado);
+            var produto = await _unitOfWork.ProdutoRepository.Editar(produtoASerEditado);
+            await _unitOfWork.Commit();
 
             if (produto == null)
             {
@@ -109,17 +132,15 @@ namespace APICatalogo.Controllers
         [HttpDelete("RemoverProduto/{idProduto:int}")]
         public async Task<ActionResult<IEnumerable<ProdutoModel>>> RemoverProduto(int idProduto)
         {
-            var produtoASerDeletado = new ProdutoModel()
-            {
-                ProdutoId = idProduto
-            };
-
-            var produto = await _produtoRepository.Deletar(produtoASerDeletado);
+            var produto = await _unitOfWork.ProdutoRepository.BuscarPorId(produtoBanco => produtoBanco.ProdutoId == idProduto);
 
             if (produto == null)
             {
-                return BadRequest("Produto não encontrado!");
+                return NotFound($"Produto com id = {idProduto} não encontrado!");
             }
+
+            await _unitOfWork.ProdutoRepository.Deletar(produto);
+            await _unitOfWork.Commit();
 
             return Ok(produto);
         }
