@@ -1,11 +1,13 @@
 ﻿using APICatalogo.Dto.Mappings;
 using APICatalogo.Dto.Produto;
 using APICatalogo.Models;
+using APICatalogo.Pagination;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Produto;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace APICatalogo.Controllers
 {
@@ -22,6 +24,38 @@ namespace APICatalogo.Controllers
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mapper = mapper;
+        }
+
+        [HttpGet("ListarProdutosComFiltros")]
+        public async Task<ActionResult<IEnumerable<ProdutoCriacaoDto>>> ListarProdutosComFiltros([FromQuery] ProdutosParameters produtosParameters)
+        {
+            var produtos = await _unitOfWork.ProdutoRepository.ListarProdutos(produtosParameters);
+
+            if (produtos == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            var metadata = new
+            {
+                produtos.TotalCount,
+                produtos.PageSize,
+                produtos.CurrentPage,
+                produtos.TotalPages,
+                produtos.HasNext,
+                produtos.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            var produtosToProdutosCriacaoDto = _mapper.Map<IEnumerable<ProdutoCriacaoDto>>(produtos);
+
+            return Ok(produtosToProdutosCriacaoDto);
         }
 
         [HttpGet("ListarProdutos")]

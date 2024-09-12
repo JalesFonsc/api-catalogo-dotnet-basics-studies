@@ -2,9 +2,11 @@
 using APICatalogo.Dto.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Models;
+using APICatalogo.Pagination;
 using APICatalogo.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace APICatalogo.Controllers
 {
@@ -21,6 +23,36 @@ namespace APICatalogo.Controllers
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+        }
+
+        [HttpGet("ListarCategoriasPorFiltros")]
+        public async Task<ActionResult<IEnumerable<CategoriaModel>>> ListarCategoriasPorFiltros([FromQuery] CategoriasParameters categoriasParameters)
+        {
+            var categorias = await _unitOfWork.CategoryRepository.ListarCategoriasPorFiltros(categoriasParameters);
+
+            if (categorias == null)
+            {
+                return BadRequest("Dados não encontrados!");
+            }
+
+            if (categorias.ToList().Count == 0)
+            {
+                return BadRequest("Não há nenhuma categoria cadastrada!");
+            }
+
+            var metadata = new
+            {
+                categorias.TotalCount,
+                categorias.PageSize,
+                categorias.CurrentPage,
+                categorias.TotalPages,
+                categorias.HasNext,
+                categorias.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            return Ok(categorias);
         }
 
         [HttpGet("ListarCategoriasComProdutos")]
@@ -93,7 +125,7 @@ namespace APICatalogo.Controllers
             await _unitOfWork.Commit();
 
             if (categoria == null) { 
-                return BadRequest("Categoria não encontrada!");
+                return BadRequest("A criação da categoria obteve um erro!");
             }
 
             return Ok(categoria);
