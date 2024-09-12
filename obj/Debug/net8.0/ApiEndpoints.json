@@ -150,6 +150,37 @@
   },
   {
     "ContainingType": "APICatalogo.Controllers.ProdutosController",
+    "Method": "AlterarEstoqueEData",
+    "RelativePath": "Produtos/{idProduto}/AlterarEstoqueEData",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idProduto",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "produtoAlteracaoParcialEstoqueEDataDto",
+        "Type": "Microsoft.AspNetCore.JsonPatch.Operations.Operation[]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "APICatalogo.Dto.Produto.ProdutoCriacaoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "APICatalogo.Controllers.ProdutosController",
     "Method": "BuscarProdutoPorId",
     "RelativePath": "Produtos/BuscarProdutoPorId/{idProduto}",
     "HttpMethod": "GET",
@@ -241,7 +272,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[APICatalogo.Models.ProdutoModel, APICatalogo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[APICatalogo.Dto.Produto.ProdutoCriacaoDto, APICatalogo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

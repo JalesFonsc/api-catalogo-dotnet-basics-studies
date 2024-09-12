@@ -4,6 +4,7 @@ using APICatalogo.Models;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Produto;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APICatalogo.Controllers
@@ -24,7 +25,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("ListarProdutos")]
-        public async Task<ActionResult<IEnumerable<ProdutoModel>>> ListarProdutos()
+        public async Task<ActionResult<IEnumerable<ProdutoCriacaoDto>>> ListarProdutos()
         {
             var produtos = await _unitOfWork.ProdutoRepository.Listar();
 
@@ -38,7 +39,9 @@ namespace APICatalogo.Controllers
                 return BadRequest("Nenhum produto cadastrado!");
             }
 
-            return Ok(produtos);
+            var produtosToProdutosCriacaoDto = _mapper.Map<IEnumerable<ProdutoCriacaoDto>>(produtos);
+
+            return Ok(produtosToProdutosCriacaoDto);
         }
 
         [HttpGet("ListarProdutosPorIdCategoria/{idCategoria:int}")]
@@ -122,6 +125,39 @@ namespace APICatalogo.Controllers
             }
 
             return Ok(produto);
+        }
+
+
+        [HttpPatch("{idProduto:int}/AlterarEstoqueEData")]
+        public async Task<ActionResult<ProdutoCriacaoDto>> AlterarEstoqueEData(int idProduto, JsonPatchDocument<ProdutoAlteracaoParcialEstoqueEDataDto> produtoAlteracaoParcialEstoqueEDataDto)
+        {
+            if (produtoAlteracaoParcialEstoqueEDataDto == null || idProduto <= 0)
+            {
+                return BadRequest("Os dados necessários não foram passados!");
+            }
+
+            var produto = await _unitOfWork.ProdutoRepository.BuscarPorId(produtoBanco => produtoBanco.ProdutoId == idProduto);
+
+            if (produto == null)
+            {
+                return NotFound($"Produto com id = {idProduto} não encontrado!");
+            }
+
+            var produtoParaAlteracaoDTO = _mapper.Map<ProdutoAlteracaoParcialEstoqueEDataDto>(produto);
+
+            produtoAlteracaoParcialEstoqueEDataDto.ApplyTo(produtoParaAlteracaoDTO, ModelState);
+
+            if (!ModelState.IsValid || !TryValidateModel(produtoParaAlteracaoDTO))
+                return BadRequest(ModelState);
+
+            _mapper.Map(produtoParaAlteracaoDTO, produto);
+
+            await _unitOfWork.ProdutoRepository.Editar(produto);
+            await _unitOfWork.Commit();
+
+            var produtoParaProdutoCriacaoDTO = _mapper.Map<ProdutoCriacaoDto>(produto);
+
+            return Ok(produtoParaProdutoCriacaoDTO);
         }
 
         [HttpDelete("RemoverProduto/{idProduto:int}")]

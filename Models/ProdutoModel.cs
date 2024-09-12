@@ -29,7 +29,10 @@ public class ProdutoModel
 
     [NotNegativeAndZero]
     public float Estoque { get; set; }
+
+    [NotAcceptingPastDatesValidation]
     public DateTime DataCadastro { get; set; }
+
     [Required]
     public int CategoriaId { get; set; }
 
