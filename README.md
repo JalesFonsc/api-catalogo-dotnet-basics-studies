@@ -19,6 +19,10 @@ Pequeno projeto onde estudo um pouco dos conceitos elementares e fundamentais da
 - Injeção de Dependências;
 - Tratamento de respostas de erro;
 - Geração automática do Swagger com a OpenAPI;
+- Padrão Repository;
+- Code-First;
+- AutoMapper;
+- DTOs;
 
 ## Como Executar
 
