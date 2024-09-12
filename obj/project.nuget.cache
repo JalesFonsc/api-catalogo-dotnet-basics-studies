@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ut1lyf7skck=",
+  "dgSpecHash": "EL/nZ8u1weo=",
   "success": true,
   "projectFilePath": "C:\\Users\\Jales\\Desktop\\Projetos C#\\C# 2\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Jales\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Jales\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Jales\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Jales\\.nuget\\packages\\humanizer.core.af\\2.14.1\\humanizer.core.af.2.14.1.nupkg.sha512",

@@ -3,6 +3,7 @@ using APICatalogo.Dto.Produto;
 using APICatalogo.Models;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Produto;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APICatalogo.Controllers
@@ -13,11 +14,13 @@ namespace APICatalogo.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<CategoriasController> _logger;
+        private readonly IMapper _mapper;
 
-        public ProdutosController(IUnitOfWork unitOfWork, ILogger<CategoriasController> logger)
+        public ProdutosController(IUnitOfWork unitOfWork, ILogger<CategoriasController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("ListarProdutos")]
@@ -77,7 +80,7 @@ namespace APICatalogo.Controllers
                 return BadRequest("Os dados necessários não foram passados!");
             }
 
-            var produtoASerCriado = produtoCriacaoDto.ToProduto(null);
+            var produtoASerCriado = _mapper.Map<ProdutoModel>(produtoCriacaoDto);
 
             if (produtoASerCriado == null)
             {

@@ -3,6 +3,7 @@ using APICatalogo.Dto.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Models;
 using APICatalogo.Repositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APICatalogo.Controllers
@@ -13,11 +14,13 @@ namespace APICatalogo.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<CategoriasController> _logger;
+        private readonly IMapper _mapper;
 
-        public CategoriasController(ILogger<CategoriasController> logger, IUnitOfWork unitOfWork)
+        public CategoriasController(ILogger<CategoriasController> logger, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet("ListarCategoriasComProdutos")]
@@ -79,7 +82,7 @@ namespace APICatalogo.Controllers
                 return BadRequest("Os dados necessários não foram passados!");
             }
 
-            var categoriaASerCriada = categoriaCriacaoDto.ToCategoria(null);
+            var categoriaASerCriada = _mapper.Map<CategoriaModel>(categoriaCriacaoDto);
 
             if (categoriaASerCriada == null)
             {
