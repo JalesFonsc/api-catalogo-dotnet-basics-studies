@@ -21,6 +21,7 @@ builder.Services.AddControllers(options =>
 .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 
 })
 .AddNewtonsoftJson();
@@ -50,13 +51,6 @@ builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderCon
 }));
 
 builder.Services.AddAutoMapper(typeof(ProdutoDTOMappingProfile));
-
-builder.Services.AddSwaggerGen(swaggerOptions =>
-{
-    swaggerOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-
-    swaggerOptions.SchemaFilter<EnumSchemaFilter>();
-});
 
 var app = builder.Build();
 
