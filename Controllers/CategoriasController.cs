@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Dto.Categoria;
 using APICatalogo.Dto.Mappings;
+using APICatalogo.Dto.Produto;
 using APICatalogo.Filters;
 using APICatalogo.Models;
 using APICatalogo.Pagination;
@@ -25,6 +26,21 @@ namespace APICatalogo.Controllers
             _mapper = mapper;
         }
 
+        private void DefinirHeadersCategorias(PagedList<CategoriaModel> categorias)
+        {
+            var metadata = new
+            {
+                categorias.TotalCount,
+                categorias.PageSize,
+                categorias.CurrentPage,
+                categorias.TotalPages,
+                categorias.HasNext,
+                categorias.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+        }
+
         [HttpGet("ListarCategoriasPorFiltros")]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> ListarCategoriasPorFiltros([FromQuery] CategoriasParameters categoriasParameters)
         {
@@ -40,19 +56,32 @@ namespace APICatalogo.Controllers
                 return BadRequest("Não há nenhuma categoria cadastrada!");
             }
 
-            var metadata = new
-            {
-                categorias.TotalCount,
-                categorias.PageSize,
-                categorias.CurrentPage,
-                categorias.TotalPages,
-                categorias.HasNext,
-                categorias.HasPrevious
-            };
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            DefinirHeadersCategorias(categorias);
 
             return Ok(categorias);
+        }
+
+        [HttpGet("ListarPorCategoriasFiltroNome")]
+        public async Task<ActionResult<IEnumerable<CategoriaCriacaoDto>>> ListarPorCategoriasFiltroNome([FromQuery] CategoriasFiltroNome categoriasFiltroNome)
+        {
+            var categorias = await _unitOfWork.CategoryRepository.ListarPorCategoriasFiltroNome(categoriasFiltroNome);
+
+            if (categorias == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (categorias.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            DefinirHeadersCategorias(categorias);
+
+            var categoriasToCategoriasCriacaoDto = _mapper.Map<IEnumerable<CategoriaCriacaoDto>>(categorias);
+
+            return Ok(categoriasToCategoriasCriacaoDto);
+
         }
 
         [HttpGet("ListarCategoriasComProdutos")]

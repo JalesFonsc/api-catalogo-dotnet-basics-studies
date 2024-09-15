@@ -7,6 +7,7 @@ using APICatalogo.Repositories;
 using APICatalogo.Repositories.Category;
 using APICatalogo.Repositories.Produto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,13 @@ builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderCon
 }));
 
 builder.Services.AddAutoMapper(typeof(ProdutoDTOMappingProfile));
+
+builder.Services.AddSwaggerGen(swaggerOptions =>
+{
+    swaggerOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+
+    swaggerOptions.SchemaFilter<EnumSchemaFilter>();
+});
 
 var app = builder.Build();
 

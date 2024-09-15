@@ -26,21 +26,8 @@ namespace APICatalogo.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("ListarProdutosComFiltros")]
-        public async Task<ActionResult<IEnumerable<ProdutoCriacaoDto>>> ListarProdutosComFiltros([FromQuery] ProdutosParameters produtosParameters)
+        private ActionResult<IEnumerable<ProdutoCriacaoDto>> ObterProdutos(PagedList<ProdutoModel> produtos)
         {
-            var produtos = await _unitOfWork.ProdutoRepository.ListarProdutos(produtosParameters);
-
-            if (produtos == null)
-            {
-                return BadRequest("Produtos não encontrados!");
-            }
-
-            if (produtos.ToList().Count == 0)
-            {
-                return BadRequest("Nenhum produto cadastrado!");
-            }
-
             var metadata = new
             {
                 produtos.TotalCount,
@@ -56,6 +43,44 @@ namespace APICatalogo.Controllers
             var produtosToProdutosCriacaoDto = _mapper.Map<IEnumerable<ProdutoCriacaoDto>>(produtos);
 
             return Ok(produtosToProdutosCriacaoDto);
+        }
+
+        [HttpGet("ListarPorProdutosFiltroPreco")]
+        public async Task<ActionResult<IEnumerable<ProdutoCriacaoDto>>> ListarProdutosComFiltros([FromQuery] ProdutosFiltroPreco produtosFiltroPreco)
+        {
+            var produtos = await _unitOfWork.ProdutoRepository.ListarPorProdutosFiltroPreco(produtosFiltroPreco);
+
+            if (produtos == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            return ObterProdutos(produtos);
+        }
+
+        
+
+        [HttpGet("ListarProdutosComFiltros")]
+        public async Task<ActionResult<IEnumerable<ProdutoCriacaoDto>>> ListarProdutosComFiltros([FromQuery] ProdutosParameters produtosParameters)
+        {
+            var produtos = await _unitOfWork.ProdutoRepository.ListarProdutos(produtosParameters);
+
+            if (produtos == null)
+            {
+                return BadRequest("Produtos não encontrados!");
+            }
+
+            if (produtos.ToList().Count == 0)
+            {
+                return BadRequest("Nenhum produto cadastrado!");
+            }
+
+            return ObterProdutos(produtos);
         }
 
         [HttpGet("ListarProdutos")]

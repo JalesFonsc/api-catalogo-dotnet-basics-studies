@@ -29,4 +29,19 @@ public class CategoryRepository : Repository<CategoriaModel>, ICategoryRepositor
 
         return categoriasOrdernadas;
     }
+
+    public async Task<PagedList<CategoriaModel>> ListarPorCategoriasFiltroNome(CategoriasFiltroNome categoriasFiltroNome)
+    {
+        var categorias = await Listar();
+
+        var categoriasQueryable = categorias.AsQueryable();
+
+        if (!string.IsNullOrEmpty(categoriasFiltroNome.Nome)) {
+            categoriasQueryable = categoriasQueryable.Where(categoria => categoria.Nome.Contains(categoriasFiltroNome.Nome)).OrderBy(p => p.Nome);
+        }
+
+        var categoriasFiltradas = PagedList<CategoriaModel>.ToPagedList(categoriasQueryable, categoriasFiltroNome.PageNumber, categoriasFiltroNome.PageSize);
+
+        return categoriasFiltradas;
+    }
 }

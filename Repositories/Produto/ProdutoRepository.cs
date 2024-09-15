@@ -11,6 +11,33 @@ namespace APICatalogo.Repositories.Produto
         {
         }
 
+        public async Task<PagedList<ProdutoModel>> ListarPorProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroPreco)
+        {
+            var produtos = await Listar();
+
+            var produtosToQueryable = produtos.AsQueryable();
+
+            if (produtosFiltroPreco.Preco.HasValue && produtosFiltroPreco.PrecoCriterio.HasValue)
+            {
+                switch(produtosFiltroPreco.PrecoCriterio)
+                {
+                case PrecoCriterio.Maior:
+                    produtosToQueryable = produtosToQueryable.Where(produto => produto.Preco > produtosFiltroPreco.Preco).OrderBy(p => p.Preco);
+                    break;
+                case PrecoCriterio.Igual:
+                    produtosToQueryable = produtosToQueryable.Where(produto => produto.Preco == produtosFiltroPreco.Preco).OrderBy(p => p.Preco);
+                    break;
+                case PrecoCriterio.Menor:
+                    produtosToQueryable = produtosToQueryable.Where(produto => produto.Preco < produtosFiltroPreco.Preco).OrderBy(p => p.Preco);
+                    break;
+                }
+            }
+
+            var produtosFiltrados = PagedList<ProdutoModel>.ToPagedList(produtosToQueryable, produtosFiltroPreco.PageNumber, produtosFiltroPreco.PageSize);
+
+            return produtosFiltrados;
+        }
+
         public async Task<PagedList<ProdutoModel>> ListarProdutos(ProdutosParameters produtosParameters)
         {
             var produtos = await Listar();
